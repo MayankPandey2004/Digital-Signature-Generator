@@ -22,7 +22,7 @@ const CanvasArea = styled.div`
 const Selector = styled.div`
   display: flex;
   flex-direction: row;
-`
+`;
 
 const Button = styled.button`
   display: flex;
@@ -39,8 +39,8 @@ const Button = styled.button`
     background-color: gray;
     color: white;
     transition: background-color 0.3s ease-in;
-}
-`
+  }
+`;
 
 function App() {
   const [signature, setSignature] = useState();
@@ -53,8 +53,17 @@ function App() {
   }
 
   const saveHandler = () => {
-    const res = signature.getTrimmedCanvas().toDataURL('signature/png');
+    const res = signature.getTrimmedCanvas().toDataURL('image/png');
     setResult(res);
+  }
+
+  const downloadHandler = () => {
+    const link = document.createElement('a');
+    link.href = result;
+    link.download = 'signature.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   return (
@@ -66,13 +75,18 @@ function App() {
         <SignatureCanvas ref={(ref) => setSignature(ref)} backgroundColor='rgba(255,255,255,1)' penColor={penColor} canvasProps={{ width: 900, height: 400, className: 'sigCanvas' }} />
       </CanvasArea>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '900px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '225px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: `{result?'325px':'225px'}` }}>
           <Button onClick={clearHandler}>
             Clear
           </Button>
           <Button onClick={saveHandler}>
             Save
           </Button>
+          {result && (
+            <Button onClick={downloadHandler}>
+              Download
+            </Button>
+          )}
         </div>
         <div>
           <Selector>
@@ -82,21 +96,18 @@ function App() {
               <option value="Black">Black</option>
               <option value="Red">Red</option>
             </select>
-
           </Selector>
         </div>
       </div>
       <div>
-        {
-          result && (
-            <div>
-              <h2>Result</h2>
-              <div style={{border: '1px dashed black', marginBottom: '40px'}}>
+        {result && (
+          <div>
+            <h2>Result</h2>
+            <div style={{border: '1px dashed black', marginBottom: '40px'}}>
               <img src={result} alt='Result-Image' />
-              </div>
             </div>
-          )
-        }
+          </div>
+        )}
       </div>
     </AppContainer>
   );
